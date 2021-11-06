@@ -2,21 +2,22 @@
 session_start();
 $pdo = new PDO('mysql:host=localhost;dbname=ebankingusers', 'root', '');
 
-if(isset($_GET['login'])) {
+if (isset($_GET['login'])) {
     $email = $_POST['email'];
     $passwort = $_POST['passwort'];
 
     //Prepared Statements: mit bennantem Parameter :name (:email)
     $statement = $pdo->prepare("SELECT * FROM users WHERE email = :email");
-    //Ausführen des Statements: iterieren über alle Einträge: 
+    //Ausführen des Statements: iterieren über alle Einträge:
     $result = $statement->execute(array('email' => $email));
-    //Neuer DB Eintrag wird geliefert oder false
+    //Neuer DB Eintrag wird geliefert ($user) oder false, was anschlißend überprüft wird!
     $user = $statement->fetch();
 
     //Überprüfung des Passworts
     if ($user !== false && password_verify($passwort, $user['passwort'])) {
+        //Session Variable userid wir mit der ID des Benutzers reg.
         $_SESSION['userid'] = $user['id'];
-        die('Login erfolgreich. Weiter zu <a href="lib/geheim.php">internen Bereich</a>');
+        die('Login erfolgreich. Weiter zu <a href="lib/geheim.php?">internen Bereich</a>');
     } else {
         $errorMessage = "E-Mail oder Passwort war ungültig<br>";
     }
@@ -43,7 +44,7 @@ if(isset($_GET['login'])) {
 </head>
 <body>
 <?php
-if(isset($errorMessage)) {
+if (isset($errorMessage)) {
     echo $errorMessage;
 }
 ?>
